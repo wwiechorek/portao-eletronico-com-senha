@@ -1,14 +1,13 @@
 #include <Keypad.h> //INCLUSÃO DE BIBLIOTECA
 #include <EEPROM.h>
 
-const int buttonPin = 2; 
+const int buttonPin = 10; 
 int buttonState = 0;
 int ativo = 0;
 unsigned long timer;
-const int ledVerde = 10; 
-const int ledVermelho = 11;
+const int ledVermelho = 12;
 const int ledAmarelo = 13;
-const int trava = 12;
+const int trava = 11;
 String password = "";
 
 const byte qtdLinhas = 4; //QUANTIDADE DE LINHAS DO TECLADO
@@ -23,7 +22,7 @@ char matriz_teclas[qtdLinhas][qtdColunas] = {
 };
  
 byte PinosqtdLinhas[qtdLinhas] = {9, 8, 7, 6}; //PINOS UTILIZADOS PELAS LINHAS
-byte PinosqtdColunas[qtdColunas] = {5, 4, 3}; //PINOS UTILIZADOS PELAS COLUNAS
+byte PinosqtdColunas[qtdColunas] = {5, 4, 3, 2}; //PINOS UTILIZADOS PELAS COLUNAS
  
 //INICIALIZAÇÃO DO TECLADO
 Keypad meuteclado = Keypad( makeKeymap(matriz_teclas), PinosqtdLinhas, PinosqtdColunas, qtdLinhas, qtdColunas); 
@@ -34,7 +33,6 @@ void setup() {
   Serial.println("Start...");
   pinMode(LED_BUILTIN, OUTPUT);
   
-  pinMode(ledVerde, OUTPUT);
   pinMode(ledVermelho, OUTPUT);
   pinMode(ledAmarelo, OUTPUT);
   pinMode(trava, OUTPUT);
@@ -82,7 +80,7 @@ void readPassword() {
   while(true) {
     char tecla_pressionada = meuteclado.getKey();
     
-    if(tecla_pressionada == *"#") {
+    if(tecla_pressionada == *"#" || digitalRead(buttonPin) == LOW) {
       digitalWrite(ledAmarelo, LOW);
       Serial.println("Exit;");
       return;
@@ -132,7 +130,6 @@ void ativar() {
 
   ativo = 1;
   Serial.println("Ativo");
-  digitalWrite(ledVerde, HIGH);
   digitalWrite(trava, HIGH);
   timer = millis();
 }
@@ -145,7 +142,6 @@ void desativar() {
   verificaAdmin();
   
   ativo = 0;
-  digitalWrite(ledVerde, LOW);
   digitalWrite(trava, LOW);
   Serial.println("Desativado");
 }
@@ -163,7 +159,6 @@ void definirSenha() {
 
   digitalWrite(ledAmarelo, HIGH);
   digitalWrite(ledVermelho, HIGH);
-  digitalWrite(ledVerde, HIGH );
   
   Serial.println("Definir senha");
   while(true) {
@@ -172,7 +167,6 @@ void definirSenha() {
     if(tecla_pressionada == *"#") {
       digitalWrite(ledAmarelo, LOW);
       digitalWrite(ledVermelho, LOW);
-      digitalWrite(ledVerde, LOW);
       Serial.println("Exit;");
       return;
     }
@@ -190,7 +184,6 @@ void definirSenha() {
       if(inputPassword.length() == 6) {
         digitalWrite(ledAmarelo, LOW);
         digitalWrite(ledVermelho, LOW);
-        digitalWrite(ledVerde, LOW);
         definirPassword(inputPassword);
         return;
       }
