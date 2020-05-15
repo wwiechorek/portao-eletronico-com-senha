@@ -59,7 +59,7 @@ void loop() {
     verificaAdmin();
   }
 
-  if (ativo == 1 && (millis() - timer) > 1000) {
+  if (ativo == 1 && (millis() - timer) > 200) {
      desativar();
   }
 
